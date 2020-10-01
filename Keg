@@ -1,0 +1,9 @@
+;; Keg
+
+(source gnu melpa)
+
+(package
+ (markuplint
+  (recipe . (markuplint :fetcher github :repo "conao3/markuplint.el"))))
+
+(dev-dependency cort)
