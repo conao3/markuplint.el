@@ -36,6 +36,81 @@ Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
 #+end_src
 
 * Usage
+** Install markuplint
+*** Use Docker markuplint
+#+begin_src sh
+  $ docker run markuplint/markuplint sample/002.html
+  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:2:7
+     1: <!DOCTYPE•html>
+     2: <html•lang=en>
+     3: <head>
+  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:4:8
+     3: <head>
+     4: →   <meta•charset=UTF-8>
+     5: →   <meta•name=viewport•content='width=device-width,•initial-scale=1.0'>
+  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:5:8
+  ...
+#+end_src
+
+Good, ~markuplint~ invoked from Emacs should be nice.
+
+Please set ~markuplint-executable-preset~ to ~'docker~.
+
+*** Use local markuplint executable
+- [Optional] Install node
+  #+begin_src sh
+    git clone https://github.com/anyenv/anyenv ~/.anyenv
+    echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.bash_profile
+    echo '$(anyenv init -)' >> ~/.bash_profile
+    anyenv install --init
+    anyenv install nodenv
+
+    eval "$(anyenv init -)"         # configure PATH
+    nodenv install -l               # list available versions
+    nodenv install 14.13.0          # install latest stable version
+    nodenv global 14.13.0           # use it in global
+  #+end_src
+
+- Install markuplint
+  - Install in global
+    #+begin_src sh
+      npm -g install markuplint
+    #+end_src
+
+  - Install in each project
+    #+begin_src sh
+      npm install markuplint --save-dev
+    #+end_src
+
+- Testing markuplint
+  #+begin_src sh
+    $ nodenv versions
+    ,* 14.13.0 (set by /home/conao/.anyenv/envs/nodenv/version)
+
+    $ which node
+    /home/conao/.anyenv/envs/nodenv/shims/node
+
+    $ which npx
+    /home/conao/.anyenv/envs/nodenv/shims/npx
+
+    $ npx markuplint --verision
+    1.0.0
+
+    $ npx markuplint sample/002.html
+    <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /home/conao/dev/repos/markuplint.el/sample/002.html:2:7
+       1: <!DOCTYPE•html>
+       2: <html•lang=en>
+       3: <head>
+    <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /home/conao/dev/repos/markuplint.el/sample/002.html:4:8
+       3: <head>
+       4: →   <meta•charset=UTF-8>
+       5: →   <meta•name=viewport•content='width=device-width,•initial-scale=1.0'>
+    ...
+  #+end_src
+
+  Good, ~markuplint~ invoked from Emacs should be nice.
+
+  Please set ~markuplint-executable-preset~ to ~'npx~.
 
 * Customize
 
