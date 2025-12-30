@@ -1,165 +1,129 @@
-#+author: conao3
-#+date: <2020-03-20 Fri>
+#+title: markuplint.el
+#+author: Naoya Yamashita
 
 [[https://github.com/conao3/markuplint.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/markuplint.el.png]]
+
 [[https://github.com/conao3/markuplint.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/markuplint.el.svg?style=flat-square]]
 [[https://github.com/conao3/markuplint.el/releases][https://img.shields.io/github/tag/conao3/markuplint.el.svg?style=flat-square]]
 [[https://github.com/conao3/markuplint.el/actions][https://github.com/conao3/markuplint.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/markuplint.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
-[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
-* Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
-- [[#usage][Usage]]
-- [[#customize][Customize]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#migration][Migration]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
+An Emacs interface for [[https://markuplint.dev/][markuplint]], the modern HTML linter that helps you write better markup.
 
-* Description
+* Overview
+
 [[https://github.com/conao3/markuplint.el][https://raw.githubusercontent.com/conao3/files/master/blob/markuplint.el/markuplint.gif]]
 
-Frontend for markuplint.
+markuplint.el provides Emacs integration with markuplint, enabling you to lint HTML files directly from your editor. It supports both Docker-based and local Node.js installations.
 
-* Install
-Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
+* Requirements
+
+- Emacs 26.1 or later
+- markuplint (via Docker or npm)
+
+* Installation
+
+** Using leaf.el
 
 #+begin_src emacs-lisp
-  (leaf markuplint :ensure t)
+(leaf markuplint :ensure t)
 #+end_src
 
-* Usage
-** Install markuplint
-*** Use Docker markuplint
-#+begin_src sh
-  $ docker run markuplint/markuplint sample/002.html
-  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:2:7
-     1: <!DOCTYPE•html>
-     2: <html•lang=en>
-     3: <head>
-  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:4:8
-     3: <head>
-     4: →   <meta•charset=UTF-8>
-     5: →   <meta•name=viewport•content='width=device-width,•initial-scale=1.0'>
-  <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /markuplint/test/fixture/002.html:5:8
-  ...
+** Using use-package
+
+#+begin_src emacs-lisp
+(use-package markuplint
+  :ensure t)
 #+end_src
 
-Good, ~markuplint~ invoked from Emacs should be nice.
+* Setting Up markuplint
 
-Please set ~markuplint-executable-preset~ to ~'docker~.
+You need markuplint installed to use this package. Choose one of the following methods:
 
-*** Use local markuplint executable
-- [Optional] Install node
-  #+begin_src sh
-    git clone https://github.com/anyenv/anyenv ~/.anyenv
-    echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.bash_profile
-    echo '$(anyenv init -)' >> ~/.bash_profile
-    anyenv install --init
-    anyenv install nodenv
+** Option 1: Docker (Recommended for Quick Setup)
 
-    eval "$(anyenv init -)"         # configure PATH
-    nodenv install -l               # list available versions
-    nodenv install 14.13.0          # install latest stable version
-    nodenv global 14.13.0           # use it in global
-  #+end_src
+Run markuplint via Docker without installing Node.js:
 
-- Install markuplint
-  - Install in global
-    #+begin_src sh
-      npm -g install markuplint
-    #+end_src
-
-  - Install in each project
-    #+begin_src sh
-      npm install markuplint --save-dev
-    #+end_src
-
-- Testing markuplint
-  #+begin_src sh
-    $ nodenv versions
-    ,* 14.13.0 (set by /home/conao/.anyenv/envs/nodenv/version)
-
-    $ which node
-    /home/conao/.anyenv/envs/nodenv/shims/node
-
-    $ which npx
-    /home/conao/.anyenv/envs/nodenv/shims/npx
-
-    $ npx markuplint --verision
-    1.0.0
-
-    $ npx markuplint sample/002.html
-    <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /home/conao/dev/repos/markuplint.el/sample/002.html:2:7
-       1: <!DOCTYPE•html>
-       2: <html•lang=en>
-       3: <head>
-    <markuplint> warning: Attribute value is must quote on double quotation mark (attr-value-quotes) /home/conao/dev/repos/markuplint.el/sample/002.html:4:8
-       3: <head>
-       4: →   <meta•charset=UTF-8>
-       5: →   <meta•name=viewport•content='width=device-width,•initial-scale=1.0'>
-    ...
-  #+end_src
-
-  Good, ~markuplint~ invoked from Emacs should be nice.
-
-  Please set ~markuplint-executable-preset~ to ~'npx~.
-
-* Customize
-
-* Information
-** Community
-Any feedback or suggestions are welcome!
-
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
-
-** Contribution
-We welcome PR!
-
-*** Require tools for testing
-- keg
-  #+begin_src shell
-    cd ~/
-    hub clone conao3/keg .keg
-    export PATH="$HOME/.keg/bin:$PATH"
-  #+end_src
-
-*** Running test
-Below operation flow is recommended.
 #+begin_src shell
-  git branch [feature-branch]       # Create branch named [feature-branch]
-  git checkout [feature-branch]     # Checkout branch named [feature-branch]
-
-  # <edit loop>
-  emacs markuplint.el             # Edit something you want
-
-  make test                         # Test markuplint
-  git commit -am "brabra"           # Commit (auto-run test before commit)
-  # </edit loop>
-
-  hub fork                          # Create fork at GitHub
-  git push [user] [feature-branch]  # Push feature-branch to your fork
-  hub pull-request                  # Create pull-request
+docker run markuplint/markuplint yourfile.html
 #+end_src
 
-** Migration
+Set the executable preset in your Emacs configuration:
 
-** License
-#+begin_example
-  General Public License Version 3 (GPLv3)
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/markuplint.el/blob/master/LICENSE
-#+end_example
+#+begin_src emacs-lisp
+(setq markuplint-executable-preset 'docker)
+#+end_src
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+** Option 2: Local npm Installation
 
-** Contributors
+*** Installing Node.js
+
+If you don't have Node.js installed, you can use a version manager like nodenv:
+
+#+begin_src shell
+# Install nodenv via anyenv
+git clone https://github.com/anyenv/anyenv ~/.anyenv
+export PATH="$HOME/.anyenv/bin:$PATH"
+eval "$(anyenv init -)"
+anyenv install nodenv
+nodenv install 20.10.0
+nodenv global 20.10.0
+#+end_src
+
+*** Installing markuplint
+
+Global installation:
+
+#+begin_src shell
+npm install -g markuplint
+#+end_src
+
+Or per-project installation:
+
+#+begin_src shell
+npm install --save-dev markuplint
+#+end_src
+
+*** Verifying the Installation
+
+#+begin_src shell
+npx markuplint --version
+npx markuplint yourfile.html
+#+end_src
+
+Set the executable preset:
+
+#+begin_src emacs-lisp
+(setq markuplint-executable-preset 'npx)
+#+end_src
+
+* Contributing
+
+Contributions are welcome. Please feel free to submit issues and pull requests.
+
+** Development Setup
+
+Install keg for running tests:
+
+#+begin_src shell
+git clone https://github.com/conao3/keg ~/.keg
+export PATH="$HOME/.keg/bin:$PATH"
+#+end_src
+
+** Workflow
+
+#+begin_src shell
+git checkout -b your-feature-branch
+# Make your changes
+make test
+git commit -am "Description of changes"
+#+end_src
+
+Then open a pull request on GitHub.
+
+* License
+
+GPLv3. See [[https://github.com/conao3/markuplint.el/blob/master/LICENSE][LICENSE]] for details.
+
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
